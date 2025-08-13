@@ -2,6 +2,19 @@
 
 import { useEffect, useState, ChangeEvent } from "react";
 import type { Advocate } from "./advocate";
+import {
+  Container,
+  Typography,
+  TextField,
+  Button,
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableRow,
+  Paper,
+} from "@mui/material";
+import SearchIcon from "@mui/icons-material/Search";
 
 export default function Home() {
   const [advocates, setAdvocates] = useState<Advocate[]>([]);
@@ -47,50 +60,54 @@ export default function Home() {
   };
 
   return (
-    <main style={{ margin: "24px" }}>
-      <h1>Solace Advocates</h1>
-      <br />
-      <br />
-      <div>
-        <p>Search</p>
-        <p>
-          Searching for: <span id="search-term"></span>
-        </p>
-        <input style={{ border: "1px solid black" }} onChange={onChange} />
-        <button onClick={onClick}>Reset Search</button>
-      </div>
-      <br />
-      <br />
-      <table>
-        <thead>
-          <th>First Name</th>
-          <th>Last Name</th>
-          <th>City</th>
-          <th>Degree</th>
-          <th>Specialties</th>
-          <th>Years of Experience</th>
-          <th>Phone Number</th>
-        </thead>
-        <tbody>
-          {filteredAdvocates.map((advocate) => {
-            return (
-              <tr>
-                <td>{advocate.firstName}</td>
-                <td>{advocate.lastName}</td>
-                <td>{advocate.city}</td>
-                <td>{advocate.degree}</td>
-                <td>
-                  {advocate.specialties.map((s) => (
-                    <div>{s}</div>
-                  ))}
-                </td>
-                <td>{advocate.yearsOfExperience}</td>
-                <td>{advocate.phoneNumber}</td>
-              </tr>
-            );
-          })}
-        </tbody>
-      </table>
-    </main>
+    <Container>
+      <Typography variant="h3" gutterBottom>
+        Solace Advocates
+      </Typography>
+
+      <Paper sx={{ padding: 2, marginBottom: 3 }}>
+        <TextField
+          label="Search Advocates"
+          variant="outlined"
+          fullWidth
+          onChange={onChange}
+          sx={{ marginBottom: 2 }}
+        />
+        <Button variant="contained" onClick={onClick} startIcon={<SearchIcon />}>
+          Search
+        </Button>
+      </Paper>
+      
+      <Table component={Paper}>
+        <TableHead>
+          <TableRow>
+            <TableCell>First Name</TableCell>
+            <TableCell>Last Name</TableCell>
+            <TableCell>City</TableCell>
+            <TableCell>Degree</TableCell>
+            <TableCell>Specialties</TableCell>
+            <TableCell>Years of Experience</TableCell>
+            <TableCell>Phone Number</TableCell>
+          </TableRow>
+        </TableHead>
+        <TableBody>
+          {filteredAdvocates.map((advocate, index) => (
+            <TableRow key={index}>
+              <TableCell>{advocate.firstName}</TableCell>
+              <TableCell>{advocate.lastName}</TableCell>
+              <TableCell>{advocate.city}</TableCell>
+              <TableCell>{advocate.degree}</TableCell>
+              <TableCell>
+                {advocate.specialties.map((s, i) => (
+                  <div key={i}>{s}</div>
+                ))}
+              </TableCell>
+              <TableCell>{advocate.yearsOfExperience}</TableCell>
+              <TableCell>{advocate.phoneNumber}</TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+    </Container>
   );
 }
