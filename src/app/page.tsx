@@ -1,10 +1,25 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, ChangeEvent } from "react";
+import type { Advocate } from "./advocate";
+import {
+  Container,
+  Typography,
+  TextField,
+  Button,
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableRow,
+  Paper,
+  TableContainer,
+} from "@mui/material";
+import SearchIcon from "@mui/icons-material/Search";
 
 export default function Home() {
-  const [advocates, setAdvocates] = useState([]);
-  const [filteredAdvocates, setFilteredAdvocates] = useState([]);
+  const [advocates, setAdvocates] = useState<Advocate[]>([]);
+  const [filteredAdvocates, setFilteredAdvocates] = useState<Advocate[]>([]);
 
   useEffect(() => {
     console.log("fetching advocates...");
@@ -16,10 +31,14 @@ export default function Home() {
     });
   }, []);
 
-  const onChange = (e) => {
-    const searchTerm = e.target.value;
+  const onChange = (event: ChangeEvent<HTMLInputElement>) => {
+    const searchTerm = event.target.value;
+    const searchTermDocElement = document.getElementById("search-term");
 
-    document.getElementById("search-term").innerHTML = searchTerm;
+    if(searchTermDocElement){ 
+      searchTermDocElement.innerHTML = searchTerm;
+    }
+    
 
     console.log("filtering advocates...");
     const filteredAdvocates = advocates.filter((advocate) => {
@@ -29,7 +48,7 @@ export default function Home() {
         advocate.city.includes(searchTerm) ||
         advocate.degree.includes(searchTerm) ||
         advocate.specialties.includes(searchTerm) ||
-        advocate.yearsOfExperience.includes(searchTerm)
+        advocate.yearsOfExperience === Number(searchTerm)
       );
     });
 
@@ -41,51 +60,68 @@ export default function Home() {
     setFilteredAdvocates(advocates);
   };
 
+  const formatPhoneNumber = (phoneNumber: string) => {
+    //remove any characters that aren't numbers
+    const cleanNumber = String(phoneNumber ?? "").replace(/\D/g, "");
+
+    if(cleanNumber.length === 10) {
+      return `(${cleanNumber.slice(0, 3)}) ${cleanNumber.slice(3, 6)}-${cleanNumber.slice(6)}`;
+    }
+    // If the number has a weird amount of digits just return it
+    return phoneNumber;
+  };
+
   return (
-    <main style={{ margin: "24px" }}>
-      <h1>Solace Advocates</h1>
-      <br />
-      <br />
-      <div>
-        <p>Search</p>
-        <p>
-          Searching for: <span id="search-term"></span>
-        </p>
-        <input style={{ border: "1px solid black" }} onChange={onChange} />
-        <button onClick={onClick}>Reset Search</button>
-      </div>
-      <br />
-      <br />
-      <table>
-        <thead>
-          <th>First Name</th>
-          <th>Last Name</th>
-          <th>City</th>
-          <th>Degree</th>
-          <th>Specialties</th>
-          <th>Years of Experience</th>
-          <th>Phone Number</th>
-        </thead>
-        <tbody>
-          {filteredAdvocates.map((advocate) => {
-            return (
-              <tr>
-                <td>{advocate.firstName}</td>
-                <td>{advocate.lastName}</td>
-                <td>{advocate.city}</td>
-                <td>{advocate.degree}</td>
-                <td>
-                  {advocate.specialties.map((s) => (
-                    <div>{s}</div>
+    <Container>
+      <Typography variant="h3" gutterBottom>
+        Solace Advocates
+      </Typography>
+
+      <Paper sx={{ padding: 2, marginBottom: 3 }}>
+        <TextField
+          label="Search Advocates"
+          variant="outlined"
+          fullWidth
+          onChange={onChange}
+          sx={{ marginBottom: 2 }}
+        />
+        <Button variant="contained" onClick={onClick} startIcon={<SearchIcon />}>
+          Search
+        </Button>
+      </Paper>
+      
+      <TableContainer component={Paper}>
+        <Table>
+          <TableHead>
+            <TableRow>
+              <TableCell>First Name</TableCell>
+              <TableCell>Last Name</TableCell>
+              <TableCell>City</TableCell>
+              <TableCell>Degree</TableCell>
+              <TableCell>Specialties</TableCell>
+              <TableCell>Years of Experience</TableCell>
+              <TableCell>Phone Number</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {filteredAdvocates.map((advocate, index) => (
+              <TableRow key={index}>
+                <TableCell>{advocate.firstName}</TableCell>
+                <TableCell>{advocate.lastName}</TableCell>
+                <TableCell>{advocate.city}</TableCell>
+                <TableCell>{advocate.degree}</TableCell>
+                <TableCell>
+                  {advocate.specialties.map((s, i) => (
+                    <div key={i}>{s}</div>
                   ))}
-                </td>
-                <td>{advocate.yearsOfExperience}</td>
-                <td>{advocate.phoneNumber}</td>
-              </tr>
-            );
-          })}
-        </tbody>
-      </table>
-    </main>
+                </TableCell>
+                <TableCell>{advocate.yearsOfExperience}</TableCell>
+                <TableCell>{formatPhoneNumber(advocate.phoneNumber)}</TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </TableContainer>
+    </Container>
   );
 }
