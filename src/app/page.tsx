@@ -13,6 +13,7 @@ import {
   TableHead,
   TableRow,
   Paper,
+  TableContainer,
 } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 
@@ -59,6 +60,17 @@ export default function Home() {
     setFilteredAdvocates(advocates);
   };
 
+  const formatPhoneNumber = (phoneNumber: string) => {
+    //remove any characters that aren't numbers
+    const cleanNumber = String(phoneNumber ?? "").replace(/\D/g, "");
+
+    if(cleanNumber.length === 10) {
+      return `(${cleanNumber.slice(0, 3)}) ${cleanNumber.slice(3, 6)}-${cleanNumber.slice(6)}`;
+    }
+    // If the number has a weird amount of digits just return it
+    return phoneNumber;
+  };
+
   return (
     <Container>
       <Typography variant="h3" gutterBottom>
@@ -78,36 +90,38 @@ export default function Home() {
         </Button>
       </Paper>
       
-      <Table component={Paper}>
-        <TableHead>
-          <TableRow>
-            <TableCell>First Name</TableCell>
-            <TableCell>Last Name</TableCell>
-            <TableCell>City</TableCell>
-            <TableCell>Degree</TableCell>
-            <TableCell>Specialties</TableCell>
-            <TableCell>Years of Experience</TableCell>
-            <TableCell>Phone Number</TableCell>
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {filteredAdvocates.map((advocate, index) => (
-            <TableRow key={index}>
-              <TableCell>{advocate.firstName}</TableCell>
-              <TableCell>{advocate.lastName}</TableCell>
-              <TableCell>{advocate.city}</TableCell>
-              <TableCell>{advocate.degree}</TableCell>
-              <TableCell>
-                {advocate.specialties.map((s, i) => (
-                  <div key={i}>{s}</div>
-                ))}
-              </TableCell>
-              <TableCell>{advocate.yearsOfExperience}</TableCell>
-              <TableCell>{advocate.phoneNumber}</TableCell>
+      <TableContainer component={Paper}>
+        <Table>
+          <TableHead>
+            <TableRow>
+              <TableCell>First Name</TableCell>
+              <TableCell>Last Name</TableCell>
+              <TableCell>City</TableCell>
+              <TableCell>Degree</TableCell>
+              <TableCell>Specialties</TableCell>
+              <TableCell>Years of Experience</TableCell>
+              <TableCell>Phone Number</TableCell>
             </TableRow>
-          ))}
-        </TableBody>
-      </Table>
+          </TableHead>
+          <TableBody>
+            {filteredAdvocates.map((advocate, index) => (
+              <TableRow key={index}>
+                <TableCell>{advocate.firstName}</TableCell>
+                <TableCell>{advocate.lastName}</TableCell>
+                <TableCell>{advocate.city}</TableCell>
+                <TableCell>{advocate.degree}</TableCell>
+                <TableCell>
+                  {advocate.specialties.map((s, i) => (
+                    <div key={i}>{s}</div>
+                  ))}
+                </TableCell>
+                <TableCell>{advocate.yearsOfExperience}</TableCell>
+                <TableCell>{formatPhoneNumber(advocate.phoneNumber)}</TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </TableContainer>
     </Container>
   );
 }
